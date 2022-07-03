@@ -1,0 +1,13 @@
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  main {
+    min-height: 87vh;
+  }
+  
+  .h50 {
+    min-height: 50vh;
+  }

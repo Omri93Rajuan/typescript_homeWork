@@ -4,10 +4,70 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>TS</title>
+    
     <script defer src="../src/app.js"></script>
+    <link rel="stylesheet" href="./style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+
+
 </head>
 <body>
-    
+    <div class="center mt-4">
+        <div class="col-12 col-md-10 col-xl-8">
+          <h1 class="text-center display-4">LOGIN PAGE TS</h1>
+          
+          <hr />
+        </div>
+
+      </div>
+
+      <div class="center h50">
+
+        <form
+          class="form bg-light col-12 col-md-6 col-xl-4 border rounded p-3"
+        >
+        <span id="login-error" class="text-danger"></span>
+
+          <div class="col-12">
+            <label for="login-email"
+              >Email <span class="text-danger">*</span>
+            </label>
+            <input
+              placeholder="user@gmail.com"
+              id="login-email"
+              class="form-control"
+              name="login-email"
+              type=""
+              autocomplete="off"
+            />
+          </div>
+
+          <div class="col-12">
+            <label for="login-password"
+              >Password <span class="text-danger">*</span>
+            </label>
+            <input
+              placeholder="enter password"
+              id="login-password"
+              class="form-control"
+              name="login-password"
+              type="password"
+              autocomplete="off"
+            />
+            <span id="login-password-error" class="text-danger"></span>
+          </div>
+
+          <div class="col-12">
+         <span id="btn-sumbit" class="btn btn-primary col-12 my-2">Sumbit</span>
+         <span id="btn-cancel" class="btn btn-danger col-12 my-2">Cancel</span>
+
+          </div>
+        </form>
+      </div>
+      <div id="msg-login" class="msg center text-primary display-6">
+      </div>
+    </div>
+
 </body>
 </html>

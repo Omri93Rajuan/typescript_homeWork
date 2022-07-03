@@ -1,45 +1,48 @@
 "use strict";
-function randomNumBetween(min, max) {
-    return Math.floor(Math.random() * (max - min + 1) + min);
-}
-const makeFirstLetterCapital = (string) => {
-    const term = string.toLowerCase().trim();
-    return term.charAt(0).toUpperCase() + term.slice(1);
-};
 class User {
-    id;
-    name;
+    #id;
+    #name;
     address;
-    phone;
-    email;
-    password;
-    createdAt;
-    isAdmin = false;
-    isBusiness = false;
-    constructor(user) {
-        this.address = user.address;
-        this.id = this.generateId();
-        this.name = this.setName(user.name.first, user.name.last);
-        this.phone = this.checkPhone(user.phone);
-        this.email = this.checkEmail(user.email);
-        this.password = this.checkPassword(user.password);
-        this.isBusiness = user.isBusiness;
-        this.isAdmin = user.isAdmin;
-        this.createdAt = new Date();
+    #phone;
+    #email;
+    #password;
+    #createdAt;
+    #isAdmin = false;
+    #isBusiness = false;
+    constructor(user, users = []) {
+        const { email, address, isAdmin, isBusiness, name, password, phone } = user;
+        const { first, last } = name;
+        this.address = address;
+        this.#id = this.generateUniqId(users);
+        this.#name = this.setName(first, last);
+        this.#phone = this.checkPhone(phone);
+        this.#email = this.checkEmail(email, users);
+        this.#password = this.checkPassword(password);
+        this.#isBusiness = isBusiness;
+        this.#isAdmin = isAdmin;
+        this.#createdAt = new Date();
     }
-    generateId() {
-        const random = Math.floor(Math.random() * (9_000_000 - 1_000_000 + 1) + 1_000_000);
-        return random;
+    randomNumBetween(min, max) {
+        return Math.floor(Math.random() * (max - min + 1) + min);
+    }
+    generateUniqId(users = []) {
+        const random = this.randomNumBetween(1_000_000, 9_999_999);
+        const user = users.findIndex((user) => user._id === random);
+        if (user === -1)
+            return random;
+        this.generateUniqId(users);
+    }
+    makeFirstLetterCapital(string) {
+        const term = string.toLowerCase().trim();
+        return term.charAt(0).toUpperCase() + term.slice(1);
     }
     setName(first, last) {
-        const firstName = makeFirstLetterCapital(first);
-        const lastName = makeFirstLetterCapital(last);
+        const firstName = this.makeFirstLetterCapital(first);
+        const lastName = this.makeFirstLetterCapital(last);
         return `${firstName} ${lastName}`;
     }
-    changeBusinessStatus(user) {
-        if (!user.isAdmin)
-            return null;
-        this.isBusiness = !this.isBusiness;
+    changeBusinessStatus() {
+        this.#isBusiness = !this.#isBusiness;
     }
     checkPhone(phoneNumber) {
         if (phoneNumber.match(/^0[0-9]{1,2}(\-?|\s?)[0-9]{3}(\-?|\s?)[0-9]{4}/g) ===
@@ -53,51 +56,88 @@ class User {
             throw new Error("The password must contain at least one uppercase letter in English. One lowercase letter in English. Four numbers and one of the following special characters !@#$%^&*-");
         return password;
     }
-    checkEmail(email) {
+    checkEmail(email, users = []) {
         if (email.match(/.+@.+\..{2,}/g) === null) {
             throw new Error("Please enter a standard email");
         }
+        const user = users.findIndex(user => user.email === email);
+        if (user !== -1)
+            throw new Error("User is already registered!");
         return email;
     }
     get _id() {
-        return this.id;
+        return this.#id;
     }
     get _name() {
-        return this.name;
+        return this.#name;
     }
-    get _email() {
-        return this.email;
+    get email() {
+        return this.#email;
     }
-    get _password() {
-        return this.password;
+    get password() {
+        return this.#password;
     }
-    get _createdAt() {
-        return this.createdAt;
+    get createdAt() {
+        return this.#createdAt;
     }
-    get _isAdmin() {
-        return this.isAdmin;
+    get isAdmin() {
+        return this.#isAdmin;
     }
-    get _isBusiness() {
-        return this.isBusiness;
+    get isBusiness() {
+        return this.#isBusiness;
     }
-    get _phone() {
-        return this.phone;
+    get phone() {
+        return this.#phone;
+    }
+    set phone(phone) {
+        this.#phone = this.checkPhone(phone);
+    }
+    set isBusiness(biz) {
+        this.#isBusiness === biz;
+    }
+    set name({ first, last }) {
+        this.#name = this.setName(first, last);
     }
 }
-const user = new User({
-    name: { first: "omri", last: "rajuan" },
+const firstUser = new User({
+    name: { first: "regular", last: "user" },
     address: {
         state: "USA",
         country: "big",
         city: "New York",
         street: "52",
         houseNumber: 109,
-        zip: "562145",
+        zip: 562145,
     },
     phone: "050-0000000",
     email: "user@gmail.com",
     password: "Aa1234!",
     isBusiness: false,
-    isAdmin: true,
+    isAdmin: false,
 });
-console.log(user);
+let users = [firstUser];
+firstUser.changeBusinessStatus();
+console.log(users);
+const EMAIL = document.getElementById("login-email");
+const PASSWORD = document.getElementById("login-password");
+const BTN_SUMBIT = document.getElementById("btn-sumbit");
+const BTN_CANCEL = document.getElementById("btn-cancel");
+const MSG = document.getElementById("msg-login");
+const ERROR_SPAN = document.getElementById("login-error");
+const cleanFilds = () => {
+    EMAIL.value = "";
+    PASSWORD.value = "";
+    ERROR_SPAN.innerHTML = "";
+    MSG.innerHTML = "";
+};
+const loginUser = (users, email, password) => {
+    const user = users.find(user => user.email === email && user.password === password);
+    if (!user)
+        ERROR_SPAN.innerHTML = "Try again The email or password is incorrect";
+    else {
+        cleanFilds();
+        MSG.innerHTML = "Welcome back";
+    }
+};
+BTN_SUMBIT.addEventListener('click', () => { loginUser(users, EMAIL.value, PASSWORD.value); });
+BTN_CANCEL.addEventListener('click', cleanFilds);
